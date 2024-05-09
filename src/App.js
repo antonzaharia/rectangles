@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext } from 'react'
+import { RectangleProvider, RectangleContext } from './context/RectangleContext'
+import DraggableRectangle from './components/DraggableRectangle'
+
+function Line({ from, to }) {
+  const styles = {
+    stroke: 'black',
+    strokeWidth: 2,
+  }
+
+  return <line x1={from.x + 50} y1={from.y + 50} x2={to.x + 50} y2={to.y + 50} style={styles} />
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <RectangleProvider>
+      <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
+        <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+          <RectangleContext.Consumer>
+            {({ rectangles }) => (
+              <>
+                {rectangles.length > 1 &&
+                  rectangles.map((rect, index) => {
+                    if (index < rectangles.length - 1) {
+                      return <Line key={index} from={rect} to={rectangles[index + 1]} />
+                    }
+                    return null
+                  })}
+              </>
+            )}
+          </RectangleContext.Consumer>
+        </svg>
+        {[1, 2, 3].map((id) => (
+          <DraggableRectangle key={id} id={id} />
+        ))}
+      </div>
+    </RectangleProvider>
+  )
 }
 
-export default App;
+export default App
